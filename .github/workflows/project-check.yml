@@ -1,0 +1,48 @@
+name: Project check
+
+on: 
+  push:
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: front-end check
+      run: |
+        ./front-end npm i
+        ./front-end npm run clearCache
+        ./front-end npm run build
+        ./front-end npm run lint
+        ./front-end npm run test:unit
+      env:
+        CI: true
+
+  e2e-chrome:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js 12
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    - name: e2e chrome test
+      run: |
+        ./front-end npm i
+        ./front-end npm run test:e2e
+      env:
+        BROWSER: chrome

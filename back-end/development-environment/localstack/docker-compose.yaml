@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4567-4584:4567-4584"
+      - "${PORT_WEB_UI-8089}:${PORT_WEB_UI-8080}"
+    environment:
+      - SERVICES=sqs,sns
+      - DEBUG=${DEBUG- }
+      - DATA_DIR=${DATA_DIR- }
+      - PORT_WEB_UI=${PORT_WEB_UI- }
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DOCKER_CLIENT_TIMEOUT=300
+      - COMPOSE_HTTP_TIMEOUT=300
+    volumes:
+      - ./init-resources.sh:/docker-entrypoint-initaws.d/init.sh
+      - ./tmp:/tmp/localstack
